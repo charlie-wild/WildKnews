@@ -2,7 +2,7 @@ const topicsData = require('../data/test-data/topics');
 const userData = require('../data/test-data/users');
 const articleData = require('../data/test-data/articles');
 const commentData = require('../data/test-data/comments');
-const { formattedForDate, userIdSetter, formatArticles, articleLookup,
+const { formattedForDate, userIdSetter, formatArticles, articleIdSetter,
   formatComments } = require('../utils');
 
 exports.seed = function (knex, Promise) {
@@ -10,17 +10,15 @@ exports.seed = function (knex, Promise) {
     .then(() => knex('users').insert(userData).returning('*'))
     .then((userRows) => {
       const formattedArticles = formattedForDate(articleData);
-      const lookup = userIdSetter(userRows);
-      const result = formatArticles(formattedArticles, lookup);
-      return knex('articles').insert(result).returning('*');
+      const userlookup = userIdSetter(userRows);
+      const result = formatArticles(formattedArticles, userlookup);
+      return Promise.all([userlookup, knex('articles').insert(result).returning('*')]);
     })
-    .then((articleRows) => {
-      const formattedComments = formattedForDate(commentData);
-      const lookup = articleLookup(articleRows);
-      const lookup2 = userIdSetter(articleRows);
-      // need to link lookup obj
-      const result = formatComments(formattedComments, lookup, lookup2);
+    .then((articleRows, userlookup) => {
+      const articleLookup = articleIdSetter(articleRows);
+      const dateComment = formattedForDate(commentData);
+      const result = formatComments(dateComment, articleLookup, userlookup);
+      console.log(result)
       return knex('comments').insert(result).returning('*');
-    
     });
-};
+}

@@ -17,19 +17,18 @@ exports.formatArticles = (data, lookupObj) => {
   return data;
 };
 
-exports.articleLookup = (article) => {
+exports.articleIdSetter = (article) => {
   const articleLookup = {};
   article.forEach(article => articleLookup[article.title] = article.article_id);
   return articleLookup;
 };
 
-exports.formatComments = (data, lookup, lookup2) => {
+exports.formatComments = (data, aL, uL) => {
   data.map((comment) => {
-    comment.article_id = lookup[comment.belongs_to];
+    comment.article_id = aL[comment.belongs_to];
+    //comment.created_by = uL[comment.article_id];
     delete comment.belongs_to;
     return comment;
-
-  // need to use lookup obj to link username
   });
   return data;
 };
