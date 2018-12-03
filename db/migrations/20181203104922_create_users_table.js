@@ -1,6 +1,6 @@
 
 exports.up = function (knex, Promise) {
-  return knex.schema.create('users', (table) => {
+  return knex.schema.createTable('users', (table) => {
     table.increments('user_id').primary().unique();
     table.string('username');
     table.string('avatar_url');
