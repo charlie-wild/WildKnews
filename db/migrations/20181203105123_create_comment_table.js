@@ -6,7 +6,7 @@ exports.up = function (knex, Promise) {
     table.integer('article_id').references('articles.article_id');
     table.integer('votes').defaultTo(0);
     table.timestamp('created_at').defaultTo(knex.fn.now());
-    table.string('body').notNullable();
+    table.string('body', 5000).notNullable();
   });
 };
 
