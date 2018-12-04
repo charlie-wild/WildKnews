@@ -22,7 +22,10 @@ exports.getArticlesByTopic = (req, res, next) => {
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
     .then(((articles) => {
-      res.status(200).send({ articles });
+      if (articles.length === 0) {
+        return Promise.reject({ status: 404, msg: 'Topic Not Found' });
+      }
+      return res.status(200).send({ articles });
     }))
     .catch(next);
 };

@@ -1,7 +1,9 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
 const apiRouter = require('./routes/api');
-const { handle404, middleErr } = require('./errors/index');
+const {
+  handle404, handle405, handle400, handle422,
+} = require('./errors/index');
 
 app.use(bodyParser.json());
 
@@ -12,7 +14,9 @@ app.use('/*', (req, res, next) => {
 });
 
 app.use(handle404);
-app.use(middleErr);
+app.use(handle405);
+app.use(handle400);
+app.use(handle422);
 
 
 module.exports = app;
