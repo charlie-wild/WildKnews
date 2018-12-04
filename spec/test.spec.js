@@ -78,7 +78,7 @@ describe('/api', () => {
         }));
       it('GET - sorts in ascending order when sort_ascending is specified true', () => request.get('/api/topics/mitch/articles?sort_critera=created_at&sort_ascending=true')
         .expect(200).then((res) => {
-          expect(res.body.articles[0].article_id).to.equal(2);
+          expect(res.body.articles[0].article_id).to.equal(12);
         }));
       it('ERROR - GET - responds with status 404 and page not found if an invalid topic slug is provided', () => request.get('/api/topics/banana/articles')
         .expect(404)

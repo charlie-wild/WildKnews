@@ -8,11 +8,12 @@ exports.getArticlesByTopic = (req, res, next) => {
   connection('articles')
     .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
     .limit(limit)
-    .orderBy(sort_criteria, 'desc')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
         articleQuery.orderBy(sort_criteria, 'asc');
+      } else {
+        articleQuery.orderBy(sort_criteria, 'desc');
       }
     })
     .where('topic', topic)
