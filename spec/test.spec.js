@@ -51,9 +51,33 @@ describe('/api', () => {
         .get('/api/topics/mitch/articles')
         .expect(200)
         .then((res) => {
-          expect(res.body.articles).to.have.length(11);
+          expect(res.body.articles).to.have.length(10);
           expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'created_by', 'created_at', 'topic', 'body', 'author', 'comment_count');
         }));
+      it('allows a limit query, which limits number of responses (default 10)', () => request
+        .get('/api/topics/mitch/articles?limit=5')
+        .expect(200).then((res) => {
+          expect(res.body.articles).to.have.length(5);
+        }));
+      it('allows a sort_by query, which sorts the article by column (default to date)', () => request.get('/api/topics/mitch/articles?sort_criteria=article_id')
+        .expect(200).then((res) => {
+         expect(res.body.articles[0].article_id).to.equal(12);
+        }));
+      it('specifies the page at which to start - starts at page one if not specified', () => request.get('/api/topics/mitch/articles?limit=5&?p=2')
+        .expect(200).then((res) => {
+          expect(res.body.articles).to.have.length(5);
+        }));
+      it('sorts in ascending order when sort_ascending is specified true', () => request.get('/api/topics/mitch/articles?sort_critera=created_at&sort_ascending=true')
+        .expect(200).then((res) => {
+          expect(res.body.articles[0].article_id).to.equal(2);
+        }));
+      it('ERROR - responds with status 404 and page not found if an invalid topic slug is provided', () => {
+        return request.get('/api/topics/banana/articles')
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).to.equal('Page Not Found');
+        })
+      })
     });
   });
 });

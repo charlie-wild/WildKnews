@@ -10,11 +10,17 @@ exports.userIdSetter = (users) => {
 };
 
 exports.formatArticles = (data, lookupObj) => {
-  data.map((article) => {
-    article.created_by = lookupObj[article.created_by];
-    return article;
+  const formatted = data.map((article) => {
+    const newArticle = { ...article };
+    newArticle.created_by = lookupObj[article.created_by];
+    const {
+      title, topic, created_by, body, created_at,
+    } = newArticle;
+    return {
+      title, topic, created_by, body, created_at,
+    };
   });
-  return data;
+  return formatted;
 };
 
 exports.articleIdSetter = (articles) => {
@@ -24,12 +30,16 @@ exports.articleIdSetter = (articles) => {
 };
 
 exports.formatComments = (data, aL, uL) => {
-  data.map((comment) => {
-    comment.article_id = aL[comment.belongs_to];
-    comment.user_id = uL[comment.created_by];
-    delete comment.belongs_to;
-    delete comment.created_by;
-    return comment;
+  const formatted = data.map((comment) => {
+    const newComment = { ...comment };
+    newComment.article_id = aL[comment.belongs_to];
+    newComment.user_id = uL[comment.created_by];
+    const {
+      comment_id, article_id, created_at, body, votes, user_id,
+    } = newComment;
+    return {
+      comment_id, article_id, created_at, body, votes, user_id,
+    };
   });
-  return data;
+  return formatted;
 };
