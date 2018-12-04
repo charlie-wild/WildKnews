@@ -51,9 +51,9 @@ describe('/api', () => {
         .get('/api/topics/mitch/articles')
         .expect(200)
         .then((res) => {
-          console.log(res.body.articles);
           expect(res.body.articles).to.have.length(11);
-           }));
+          expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'created_by', 'created_at', 'topic', 'body', 'author', 'comment_count');
+        }));
     });
   });
 });
