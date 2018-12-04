@@ -8,6 +8,7 @@
     "lint": "eslint ./",
     "pre-commit": "npm t",
     "posttest": "npm run lint",
+    "fix": "eslint --fix ./",
     "seed": "npx knex migrate:rollback --env test && npx knex migrate:latest --env test && npx knex seed:run --env test"
   },
   "repository": {

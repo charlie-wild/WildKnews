@@ -1,21 +1,17 @@
 const app = require('express')();
 const bodyParser = require('body-parser');
 const apiRouter = require('./routes/api');
+const { handle404 } = require('./errors/index');
 
 app.use(bodyParser.json());
 
 app.use('/api', apiRouter);
 
-app.all('/*', (req, res, next) => {
-  res.status(404).json({
-    msg: 'page does not exist',
-  });
+app.use('/*', (req, res, next) => {
+  next({ status: 404, msg: 'Page Not Found' });
 });
 
-app.use((err, req, res, next) => {
-  res.status(500).json({
-    err,
-  });
-});
+app.use(handle404);
+
 
 module.exports = app;

@@ -5,7 +5,7 @@ exports.formattedForDate = (data) => {
 
 exports.userIdSetter = (users) => {
   const userLookup = {};
-  users.forEach(user => userLookup[user.username] = user.user_id );
+  users.forEach(user => userLookup[user.username] = user.user_id);
   return userLookup;
 };
 
@@ -17,17 +17,18 @@ exports.formatArticles = (data, lookupObj) => {
   return data;
 };
 
-exports.articleIdSetter = (article) => {
+exports.articleIdSetter = (articles) => {
   const articleLookup = {};
-  article.forEach(article => articleLookup[article.title] = article.article_id);
+  articles.forEach(article => articleLookup[article.title] = article.article_id);
   return articleLookup;
 };
 
 exports.formatComments = (data, aL, uL) => {
   data.map((comment) => {
     comment.article_id = aL[comment.belongs_to];
-    //comment.created_by = uL[comment.article_id];
+    comment.user_id = uL[comment.created_by];
     delete comment.belongs_to;
+    delete comment.created_by;
     return comment;
   });
   return data;

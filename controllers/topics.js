@@ -12,8 +12,8 @@ exports.getAllTopics = (req, res, next) => {
 
 exports.postNewTopic = (req, res, next) => {
   connection('topics')
-    .returning()
-    .insertInto(req.body)
+    .returning('*')
+    .insert(req.body)
     .then((newTopic) => {
       res.status(201).send({ newTopic });
     })
