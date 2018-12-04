@@ -46,5 +46,14 @@ describe('/api', () => {
       .then((res) => {
         expect(res.body.msg).to.equal('Method Not Allowed');
       }));
+    describe.only('/:topic/articles', () => {
+      it('GET - responds with status 200 and and array of articles for given topic', () => request
+        .get('/api/topics/mitch/articles')
+        .expect(200)
+        .then((res) => {
+          console.log(res.body.articles);
+          expect(res.body.articles).to.have.length(11);
+           }));
+    });
   });
 });
