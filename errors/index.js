@@ -11,7 +11,7 @@ exports.handle400 = (err, req, res, next) => {
 exports.handle422 = (err, req, res, next) => {
   const codes = {
     23505: 'Key Already Exists',
-    23503: 'User Key Not Present',
+    23503: 'Invalid Parameter',
   };
   if (codes[err.code]) {
     res.status(422).send({ msg: codes[err.code] });

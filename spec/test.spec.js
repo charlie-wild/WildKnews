@@ -88,7 +88,7 @@ describe('/api', () => {
       it('ERROR - GET - responds with status 404 and page not found if an invalid topic slug is provided', () => request.get('/api/topics/banana/articles')
         .expect(404)
         .then((res) => {
-          expect(res.body.msg).to.equal('Topic Not Found');
+          expect(res.body.msg).to.equal('Page Not Found');
         }));
       it('ERROR - PATCH - responds with status 405 and "Method Not Allowed"', () => request.patch('/api/topics/mitch/articles')
         .expect(405)
@@ -102,11 +102,11 @@ describe('/api', () => {
           expect(res.body.article).to.have.length(1);
           expect(res.body.article[0].title).to.equal('Test Article');
         }));
-      it('ERROR - POST - responds with status 404 and topic not found when invalid topic provided', () => request.post('api/topics/error/articles')
+      it.skip('ERROR - POST - responds with status 404 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
         .send(newArticle)
         .expect(404)
         .then((res) => {
-          expect(res.body.msg).to.equal('Page Not Found');
+          expect(res.body.msg).to.equal('Topic Not Found');
         }));
       it('ERROR - POST - responds with status 400 when submission is provided with incorrect keys', () => request.post('/api/topics/mitch/articles')
         .send({ title: 'test', body: 'test' })
@@ -119,7 +119,7 @@ describe('/api', () => {
         .expect(422)
         .then((res) => {
           expect(res.status).to.equal(422);
-          expect(res.body.msg).to.equal('User Key Not Present');
+          expect(res.body.msg).to.equal('Invalid Parameter');
         }));
     });
   });
@@ -153,7 +153,7 @@ describe('/api', () => {
         expect(res.status).to.equal(400);
       }));
     describe('/:article_id', () => {
-      it('responds with an article object with the provided id', () => request.get('/api/articles/3')
+      it('GET - responds with an article object with the provided id', () => request.get('/api/articles/3')
         .expect(200).then((res) => {
           expect(res.body.articles[0].title).to.equal('Eight pug gifs that remind me of mitch');
         }));
@@ -164,6 +164,92 @@ describe('/api', () => {
       it('ERROR - responds with 404 if the article does not exist', () => request.get('/api/articles/45')
         .expect(404).then((res) => {
           expect(res.status).to.equal(404);
+        }));
+      it('PATCH - updates the votes property of the article by the given positive amount', () => {
+        const votes = { inc_votes: 5 };
+        return request.patch('/api/articles/3')
+          .send(votes)
+          .expect(200).then((res) => {
+            expect(res.body.article[0].votes).to.equal(5);
+          });
+      });
+      it('PATCH - updates the votes property of the article by the given negative amount', () => {
+        const votes = {
+          inc_votes: -5,
+        };
+        return request.patch('/api/articles/3')
+          .send(votes)
+          .expect(200).then((res) => {
+            expect(res.body.article[0].votes).to.equal(-5);
+          });
+      });
+      it('ERROR - PATCH - responds with status 404 and not found if a valid but non existent id is provided', () => request.patch('/api/articles/45')
+        .send({ inc_votes: -5 })
+        .expect(404).then((res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.msg).to.equal('Page Not Found');
+        }));
+      it('ERROR - PATCH - responds with status 400 if article request is malformed syntax', () => request.patch('/api/articles/error')
+        .send({ inc_votes: 5 })
+        .expect(400).then((res) => {
+          expect(res.status).to.equal(400);
+        }));
+      it('ERROR - PATCH - responds with status 400 if votes are malformed syntax', () => request.patch('/api/articles/3')
+        .send({
+          inc_votes: 'string',
+        })
+        .expect(400).then((res) => {
+          expect(res.status).to.equal(400);
+        }));
+      it('DELETE - responds with status 200 and deletion message when article is deleted', () => request.delete('/api/articles/3')
+        .expect(200).then((res) => {
+          expect(res.body.result).to.eql({});
+        }).then(() => request.get('/api/articles/3')
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).to.equal('Page Not Found');
+          })));
+      it('ERROR - DELETE - respond with status 404 if delete request on a non-existent article', () => request.delete('/api/articles/34')
+        .expect(404).then((res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.msg).to.eql('Page Not Found');
+        }));
+    });
+    describe.only('/:article_id/comments', () => {
+      it('GET - responds with status 2000 and an array of comments for the given article', () => request.get('/api/articles/1/comments')
+        .expect(200).then((res) => {
+          expect(res.body.comments).to.have.length(10);
+          expect(res.body.comments[0]).to.have.keys('comment_id', 'votes', 'created_at', 'author', 'body');
+        }));
+      it('GET - responds with 200 and a limited number of comments if limit is provided (default 10)', () => request.get('/api/articles/1/comments?limit=5')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments).to.have.length(5);
+        }));
+      it('GET - responds with 200 and comments sorted by any valid column (defaults to date)', () => request.get('/api/articles/1/comments?sort_criteria=votes')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments[0].author).to.equal('icellusedkars');
+        }));
+      it('GET - responds with 200 and specifies the page at which to start - starts at page one if not specified', () => request.get('/api/articles/1/comments?limit=5&?p=2')
+        .expect(200).then((res) => {
+          expect(res.body.comments).to.have.length(5);
+        }));
+      it('GET - responds with 200 sorts in ascending order when sort_ascending is specified true', () => request.get('/api/articles/1/comments?sort_critera=created_at&sort_ascending=true')
+        .expect(200).then((res) => {
+          expect(res.body.comments[0].comment_id).to.equal(18);
+        }));
+      it('ERROR - GET - responds with 404 if article being accessed has no comments', () => request.get('/api/articles/8/comments')
+        .expect(404)
+        .then((res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.msg).to.equal('Page Not Found');
+        }));
+      it('ERROR - DELETE - responds with 405 if user attempts to delete all comments on article', () => request.delete('/api/articles/1/comments')
+        .expect(405)
+        .then((res) => {
+          expect(res.status).to.equal(405);
+          expect(res.body.msg).to.equal('Method Not Allowed');
         }));
     });
   });

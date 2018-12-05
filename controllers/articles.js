@@ -24,7 +24,7 @@ exports.getArticlesByTopic = (req, res, next) => {
     .groupBy('articles.article_id', 'users.username')
     .then(((articles) => {
       if (articles.length === 0) {
-        return Promise.reject({ status: 404, msg: 'Topic Not Found' });
+        return Promise.reject({ status: 404, msg: 'Page Not Found' });
       }
       return res.status(200).send({ articles });
     }))
@@ -68,7 +68,7 @@ exports.getAllArticles = (req, res, next) => {
     .groupBy('articles.article_id', 'users.username')
     .then(((articles) => {
       if (articles.length === 0) {
-        return Promise.reject({ status: 404, msg: 'Topic Not Found' });
+        return Promise.reject({ status: 404, msg: 'Page Not Found' });
       }
       return res.status(200).send({ articles });
     }))
@@ -100,12 +100,50 @@ exports.getArticleById = (req, res, next) => {
       if (articles.length === 0) {
         return Promise.reject({
           status: 404,
-          msg: 'Topic Not Found',
+          msg: 'Page Not Found',
         });
       }
       return res.status(200).send({
         articles,
       });
     }))
+    .catch(next);
+};
+
+exports.modifyArticleVotes = (req, res, next) => {
+  if (typeof req.body.inc_votes === 'string') {
+    return next({ status: 400 });
+  }
+  const incOrDec = req.body.inc_votes > 0 ? 'increment' : 'decrement';
+  const { article_id } = req.params;
+  const votesInt = Math.abs(req.body.inc_votes);
+  return connection('articles')
+    .select('*')[incOrDec]('votes', votesInt)
+    .where('articles.article_id', article_id)
+    .returning('*')
+    .then((article) => {
+      if (article.length === 0) {
+        res.status(404).send({ msg: 'Page Not Found' });
+      } else { res.status(200).send({ article }); }
+    })
+    .catch(next);
+};
+
+exports.deleteArticle = (req, res, next) => {
+  const {
+    article_id,
+  } = req.params;
+  return connection('articles')
+    .select('*')
+    .where('articles.article_id', article_id)
+    .del()
+    .returning('*')
+    .then((article) => {
+      if (article.length === 0) {
+        res.status(404).send({
+          msg: 'Page Not Found',
+        });
+      } else { res.status(200).send({ result: {} }); }
+    })
     .catch(next);
 };
