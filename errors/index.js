@@ -15,9 +15,12 @@ exports.handle400 = (err, req, res, next) => {
 };
 
 exports.handle422 = (err, req, res, next) => {
-  if (err.code === '23505') {
-    res.status(422).send({ msg: 'Key already exists' });
-  } else { next(err); }
+  const codes = {
+    23505: 'Key Already Exists',
+    23503: 'User Key Not Present',
+  };
+  if (codes[err.code]) { res.status(422).send({msg: codes[err.code]});
+  } else next(err);
 };
 
 exports.handle405 = (req, res, next) => {

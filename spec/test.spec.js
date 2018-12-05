@@ -56,6 +56,11 @@ describe('/api', () => {
         });
     });
     describe('/:topic/articles', () => {
+      const newArticle = {
+        title: 'Test Article',
+        body: 'test article body',
+        user_id: 2,
+      };
       it('GET - responds with status 200 and and array of articles for given topic', () => request
         .get('/api/topics/mitch/articles')
         .expect(200)
@@ -90,6 +95,40 @@ describe('/api', () => {
         .then(((res) => {
           expect(res.body.msg).to.equal('Method Not Allowed');
         })));
+      it('POST - accepts an object containing a title, body and user_id property and responds with the posted article', () => request.post('/api/topics/mitch/articles')
+        .expect(201)
+        .send(newArticle)
+        .then((res) => {
+          expect(res.body.article).to.have.length(1);
+          expect(res.body.article[0].title).to.equal('Test Article');
+        }));
+      it('ERROR - POST - responds with status 404 and topic not found when invalid topic provided', () => request.post('api/topics/error/articles')
+        .send(newArticle)
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).to.equal('Page Not Found');
+        }));
+      it('ERROR - POST - responds with status 400 when submission is provided with incorrect keys', () => request.post('/api/topics/mitch/articles')
+        .send({ title: 'test', body: 'test' })
+        .expect(400)
+        .then((res) => {
+          expect(res.status).to.equal(400);
+        }));
+      it.only('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
+        .send({ title: 'test', body: 'test', user_id: 23434 })
+        .expect(422)
+        .then((res) => {
+          expect(res.status).to.equal(422);
+          expect(res.body.msg).to.equal('User Key Not Present');
+        }));
     });
+  });
+  describe('/articles', () => {
+    it('GET - responds with 200 and an array of article objects', () => request.get('/api/articles')
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'created_by', 'created_at', 'topic', 'body', 'author', 'comment_count');
+        expect(res.body.articles).to.have.length(12);
+      }));
   });
 });
