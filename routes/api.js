@@ -1,7 +1,12 @@
 const apiRouter = require('express').Router();
 const { getAllTopics, postNewTopic } = require('../controllers/topics');
-const { getArticlesByTopic, postNewArticleToTopic, getAllArticles } = require('../controllers/articles');
+const {
+  getArticlesByTopic, postNewArticleToTopic, getAllArticles, getArticleById,
+} = require('../controllers/articles');
 const { handle405 } = require('../errors/index');
+
+
+// routing middleware
 
 apiRouter.route('/topics')
   .get(getAllTopics)
@@ -15,6 +20,10 @@ apiRouter.route('/topics/:topic/articles')
 
 apiRouter.route('/articles')
   .get(getAllArticles)
+  .all(handle405);
+
+apiRouter.route('/articles/:article_id')
+  .get(getArticleById)
   .all(handle405);
 
 module.exports = apiRouter;

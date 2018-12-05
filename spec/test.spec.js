@@ -52,7 +52,7 @@ describe('/api', () => {
       return request.post('/api/topics').send(newTopic)
         .expect(422)
         .then((res) => {
-          expect(res.body.msg).to.equal('Key already exists');
+          expect(res.body.msg).to.equal('Key Already Exists');
         });
     });
     describe('/:topic/articles', () => {
@@ -114,7 +114,7 @@ describe('/api', () => {
         .then((res) => {
           expect(res.status).to.equal(400);
         }));
-      it.only('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
+      it('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
         .send({ title: 'test', body: 'test', user_id: 23434 })
         .expect(422)
         .then((res) => {
@@ -128,7 +128,43 @@ describe('/api', () => {
       .expect(200)
       .then((res) => {
         expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'created_by', 'created_at', 'topic', 'body', 'author', 'comment_count');
-        expect(res.body.articles).to.have.length(12);
+        expect(res.body.articles).to.have.length(10);
       }));
+    it('GET - responds with 200 and a limited number of articles if limit is provided (default 10', () => request.get('/api/articles?limit=5')
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).to.have.length(5);
+      }));
+    it('GET - responds with 200 and articles sorted by any valid column (defaults to date)', () => request.get('/api/articles?sort_criteria=comment_count')
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles[0].title).to.equal('Living in the shadow of a great man');
+      }));
+    it('GET - specifies the page at which to start - starts at page one if not specified', () => request.get('/api/articles?limit=5&?p=2')
+      .expect(200).then((res) => {
+        expect(res.body.articles).to.have.length(5);
+      }));
+    it('GET - sorts in ascending order when sort_ascending is specified true', () => request.get('/api/articles?sort_critera=created_at&sort_ascending=true')
+      .expect(200).then((res) => {
+        expect(res.body.articles[0].article_id).to.equal(12);
+      }));
+    it('ERROR - responds with 400 if there is an incorrect query provided', () => request.get('/api/articles?sort_criteria=2343')
+      .expect(400).then((res) => {
+        expect(res.status).to.equal(400);
+      }));
+    describe('/:article_id', () => {
+      it('responds with an article object with the provided id', () => request.get('/api/articles/3')
+        .expect(200).then((res) => {
+          expect(res.body.articles[0].title).to.equal('Eight pug gifs that remind me of mitch');
+        }));
+      it('ERROR - responds with 400 if the article id is malformed', () => request.get('/api/articles/error')
+        .expect(400).then((res) => {
+          expect(res.status).to.equal(400);
+        }));
+      it('ERROR - responds with 404 if the article does not exist', () => request.get('/api/articles/45')
+        .expect(404).then((res) => {
+          expect(res.status).to.equal(404);
+        }));
+    });
   });
 });
