@@ -1,5 +1,5 @@
 const apiRouter = require('express').Router();
-
+const { serveEndpoints } = require('../controllers/api');
 const {
   handle405,
 } = require('../errors/index');
@@ -16,6 +16,7 @@ apiRouter.use('/users', userRouter);
 
 
 apiRouter.route('/')
+  .get(serveEndpoints)
   .all(handle405);
 
 module.exports = apiRouter;

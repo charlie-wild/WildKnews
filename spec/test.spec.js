@@ -13,6 +13,11 @@ describe('/api', () => {
   after(() => {
     connection.destroy();
   });
+  it.only('GET - serves JSON describing all endpoints', () => request.get('/api')
+    .expect(200)
+    .then((res) => {
+      expect(res.body).to.be.an('object');
+    }));
   it('ERROR - responds with status 404 and "Page Not Found" when passed an invalid endpoint', () => request.get('/api/bananas')
     .expect(404)
     .then((res) => {
@@ -203,7 +208,7 @@ describe('/api', () => {
         }));
       it('DELETE - responds with status 204 and deletion message when article is deleted', () => request.delete('/api/articles/3')
         .expect(204).then((res) => {
-          expect(res.body.result).to.eql({});
+          expect(res.body).to.eql({});
         }).then(() => request.get('/api/articles/3')
           .expect(404)
           .then((res) => {
