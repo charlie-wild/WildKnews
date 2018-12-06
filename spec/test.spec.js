@@ -17,6 +17,7 @@ describe('/api', () => {
     .expect(200)
     .then((res) => {
       expect(res.body).to.be.an('object');
+      expect(res.body.endpoints).to.have.keys('/api/topics', '/api/:topic/articles', '/api/articles', '/api/articles/:article_id', '/api/articles/:article_id/comments', '/api/articles/:article_id/comments/:comment_id', '/api/users', '/api/users/:user_id');
     }));
   it('ERROR - responds with status 404 and "Page Not Found" when passed an invalid endpoint', () => request.get('/api/bananas')
     .expect(404)
@@ -107,11 +108,11 @@ describe('/api', () => {
           expect(res.body.article).to.have.length(1);
           expect(res.body.article[0].title).to.equal('Test Article');
         }));
-      it('ERROR - POST - responds with status 404 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
+      it('ERROR - POST - responds with status 422 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
         .send(newArticle)
-        .expect(404)
+        .expect(422)
         .then((res) => {
-          expect(res.body.msg).to.equal('Page Not Found');
+          expect(res.body.msg).to.equal('Invalid Parameter');
         }));
       it('ERROR - POST - responds with status 400 when submission is provided with incorrect keys', () => request.post('/api/topics/mitch/articles')
         .send({ title: 'test', body: 'test' })
@@ -119,7 +120,7 @@ describe('/api', () => {
         .then((res) => {
           expect(res.status).to.equal(400);
         }));
-      it.only('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
+      it('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
         .send({ title: 'test', body: 'test', user_id: 23434 })
         .expect(422)
         .then((res) => {

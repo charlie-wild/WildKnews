@@ -29,7 +29,7 @@ exports.serveEndpoints = (req, res, next) => {
       methods: ['get'],
       description: 'get all users',
     },
-    'api/users/:user_id': {
+    '/api/users/:user_id': {
       methods: ['get'],
       description: 'get user by id',
     },
