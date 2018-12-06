@@ -2,7 +2,7 @@ const {
   articleData,
   topicData,
   commentData,
-  userData
+  userData,
 } = require('../data/index.js');
 const {
   userIdSetter, formatArticles, articleIdSetter,

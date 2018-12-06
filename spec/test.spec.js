@@ -366,6 +366,22 @@ describe('/api', () => {
         expect(res.status).to.equal(405);
         expect(res.body.msg).to.equal('Method Not Allowed');
       }));
+    it('ERROR - PATCH - responds with status 405 when a patch action is attempted', () => {
+      request.patch('/api/users')
+        .expect(405)
+        .then((res) => {
+          expect(res.status).to.equal(405);
+          expect(res.body.msg).to.equal('Method Not Allowed');
+        });
+    });
+    it('ERROR - POST - responds with status 405 when a post action is attempted', () => {
+      request.post('/api/users')
+        .expect(405)
+        .then((res) => {
+          expect(res.status).to.equal(405);
+          expect(res.body.msg).to.equal('Method Not Allowed');
+        });
+    });
     describe('/:user_id', () => {
       it('GET - responds with a user with the specified ID', () => {
         request.get('/api/users/1')
