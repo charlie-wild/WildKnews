@@ -330,13 +330,64 @@ describe('/api', () => {
       });
       it('DELETE - responds with status 204 and deletion message when article is deleted', () => request.delete('/api/articles/1/comments/2')
         .expect(204).then((res) => {
-         expect(res.body).to.eql({});
+          expect(res.body).to.eql({});
         }).then(() => request.get('/api/articles/1/comments/2')
           .expect(404)
           .then((res) => {
             expect(res.body.msg).to.equal('Page Not Found');
           })));
-       it.only
+      it('ERROR - DELETE - responds with 404 if comment does not exist', () => request.delete('/api/articles/1/comments/1')
+        .expect(404).then((res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.msg).to.equal('Page Not Found');
+        }));
+      it('ERROR - DELETE - responds with 400 if comment_id type is invalid', () => request.delete('/api/articles/1/comments/cheese')
+        .expect(400).then((res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.msg).to.equal('invalid input syntax for type integer');
+        }));
+    });
+  });
+  describe('/users', () => {
+    it('GET - responds with status 200 and an array of user objects', () => request.get('/api/users')
+      .expect(200)
+      .then((res) => {
+        expect(res.body.users[0]).to.have.keys('user_id', 'username', 'avatar_url', 'name');
+        expect(res.body.users).to.have.length(3);
+      }));
+    it('ERROR - DELETE - responds with status 405 when a delete action is attempted', () => request.delete('/api/users')
+      .expect(405)
+      .then((res) => {
+        expect(res.status).to.equal(405);
+        expect(res.body.msg).to.equal('Method Not Allowed');
+      }));
+    describe('/:user_id', () => {
+      it('GET - responds with a user with the specified ID', () => {
+        request.get('/api/users/1')
+          .expect(200)
+          .then((res) => {
+            expect(res.body.user).to.have.length(1);
+            expect(res.body.user[0].name).to.equal('jonny');
+          });
+      });
+      it('ERROR - DELETE - responds with status 405 when a delete action is attempted', () => request.delete('/api/users/1')
+        .expect(405)
+        .then((res) => {
+          expect(res.status).to.equal(405);
+          expect(res.body.msg).to.equal('Method Not Allowed');
+        }));
+      it('ERROR - GET - responds with 404 if a non-existent username is requested', () => request.get('/api/users/45')
+        .expect(404)
+        .then((res) => {
+          expect(res.status).to.equal(404);
+          expect(res.body.msg).to.equal('Page Not Found');
+        }));
+      it('ERROR - GET - responds with 400 if username is incorrect syntax', () => request.get('/api/users/error')
+        .expect(400)
+        .then((res) => {
+          expect(res.status).to.equal(400);
+          expect(res.body.msg).to.equal('invalid input syntax for type integer');
+        }));
     });
   });
 });

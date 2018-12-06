@@ -1,5 +1,4 @@
 exports.handle400 = (err, req, res, next) => {
-  console.log(err);
   const codes = {
     23502: 'violates not null violation',
     '22P02': 'invalid input syntax for type integer',

@@ -5,9 +5,11 @@ const {
 } = require('../errors/index');
 const topicRouter = require('../routes/topics');
 const articleRouter = require('../routes/articles');
+const userRouter = require('../routes/users');
 
 apiRouter.use('/topics', topicRouter);
 apiRouter.use('/articles', articleRouter);
+apiRouter.use('/users', userRouter);
 
 
 // routing middleware
