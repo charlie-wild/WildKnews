@@ -13,7 +13,7 @@ describe('/api', () => {
   after(() => {
     connection.destroy();
   });
-  it.only('GET - serves JSON describing all endpoints', () => request.get('/api')
+  it('GET - serves JSON describing all endpoints', () => request.get('/api')
     .expect(200)
     .then((res) => {
       expect(res.body).to.be.an('object');
@@ -107,11 +107,11 @@ describe('/api', () => {
           expect(res.body.article).to.have.length(1);
           expect(res.body.article[0].title).to.equal('Test Article');
         }));
-      it.skip('ERROR - POST - responds with status 404 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
+      it('ERROR - POST - responds with status 404 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
         .send(newArticle)
         .expect(404)
         .then((res) => {
-          expect(res.body.msg).to.equal('Topic Not Found');
+          expect(res.body.msg).to.equal('Page Not Found');
         }));
       it('ERROR - POST - responds with status 400 when submission is provided with incorrect keys', () => request.post('/api/topics/mitch/articles')
         .send({ title: 'test', body: 'test' })
@@ -119,7 +119,7 @@ describe('/api', () => {
         .then((res) => {
           expect(res.status).to.equal(400);
         }));
-      it('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
+      it.only('ERROR - POST - responds with status 422 and invalid user_id when submission has invalid user_id', () => request.post('/api/topics/mitch/articles')
         .send({ title: 'test', body: 'test', user_id: 23434 })
         .expect(422)
         .then((res) => {
@@ -279,7 +279,7 @@ describe('/api', () => {
             expect(res.status).to.equal(400);
           });
       });
-      it.skip('ERROR - POST - responds with 404 if attempting to post to non-existent article', () => {
+      it('ERROR - POST - responds with 404 if attempting to post to non-existent article', () => {
         const comment = {
           user_id: 1,
           body: 'test comment',
@@ -298,7 +298,6 @@ describe('/api', () => {
         return request.patch('/api/articles/1/comments/2')
           .send(votes)
           .expect(200).then((res) => {
-            console.log(res.body);
             expect(res.body.comment[0].votes).to.equal(19);
           });
       });

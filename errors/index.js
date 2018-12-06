@@ -8,6 +8,22 @@ exports.handle400 = (err, req, res, next) => {
   else next(err);
 };
 
+exports.handle404 = (err, req, res, next) => {
+  console.log(err);
+  if (err.routine === 'ri_ReportViolation') {
+    res.status(404).send({
+      msg: 'Page Not Found',
+    });
+  }
+  if (err.status === 404) {
+    res.status(404).send({
+      msg: err.msg,
+    });
+  } else {
+    next(err);
+  }
+};
+
 exports.handle422 = (err, req, res, next) => {
   const codes = {
     23505: 'Key Already Exists',
@@ -18,18 +34,6 @@ exports.handle422 = (err, req, res, next) => {
   } else next(err);
 };
 
-exports.handle404 = (err, req, res, next) => {
-  if (err.code === 23503 && err.constraint === 'comments_article_id_foreign') {
-    res.status(404).send({ msg: err.msg });
-  }
-  if (err.status === 404) {
-    res.status(404).send({
-      msg: err.msg,
-    });
-  } else {
-    next(err);
-  }
-};
 
 exports.handle405 = (req, res, next) => {
   res.status(405).send({ msg: 'Method Not Allowed' });
