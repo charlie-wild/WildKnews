@@ -9,6 +9,7 @@ const articleRouter = require('../routes/articles');
 apiRouter.use('/topics', topicRouter);
 apiRouter.use('/articles', articleRouter);
 
+
 // routing middleware
 
 

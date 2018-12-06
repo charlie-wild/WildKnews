@@ -1,4 +1,5 @@
 exports.handle400 = (err, req, res, next) => {
+  console.log(err);
   const codes = {
     23502: 'violates not null violation',
     '22P02': 'invalid input syntax for type integer',
@@ -19,6 +20,9 @@ exports.handle422 = (err, req, res, next) => {
 };
 
 exports.handle404 = (err, req, res, next) => {
+  if (err.code === 23503 && err.constraint === 'comments_article_id_foreign') {
+    res.status(404).send({ msg: err.msg });
+  }
   if (err.status === 404) {
     res.status(404).send({
       msg: err.msg,

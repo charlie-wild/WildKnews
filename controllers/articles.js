@@ -143,7 +143,7 @@ exports.deleteArticle = (req, res, next) => {
         res.status(404).send({
           msg: 'Page Not Found',
         });
-      } else { res.status(200).send({ result: {} }); }
+      } else { res.status(204).send({ result: {} }); }
     })
     .catch(next);
 };

@@ -10,7 +10,11 @@ const {
 } = require('../controllers/articles');
 const {
   getCommentsByArticleId,
+  postNewCommentToArticle,
+  modifyCommentVotes,
+  deleteComment,
 } = require('../controllers/comments');
+
 
 articleRouter.route('/')
   .get(getAllArticles)
@@ -24,6 +28,13 @@ articleRouter.route('/:article_id')
 
 articleRouter.route('/:article_id/comments')
   .get(getCommentsByArticleId)
+  .post(postNewCommentToArticle)
   .all(handle405);
+
+articleRouter.route('/:article_id/comments/:comment_id')
+  .patch(modifyCommentVotes)
+  .delete(deleteComment)
+  .post(handle405);
+
 
 module.exports = articleRouter;

@@ -201,8 +201,8 @@ describe('/api', () => {
         .expect(400).then((res) => {
           expect(res.status).to.equal(400);
         }));
-      it('DELETE - responds with status 200 and deletion message when article is deleted', () => request.delete('/api/articles/3')
-        .expect(200).then((res) => {
+      it('DELETE - responds with status 204 and deletion message when article is deleted', () => request.delete('/api/articles/3')
+        .expect(204).then((res) => {
           expect(res.body.result).to.eql({});
         }).then(() => request.get('/api/articles/3')
           .expect(404)
@@ -215,7 +215,7 @@ describe('/api', () => {
           expect(res.body.msg).to.eql('Page Not Found');
         }));
     });
-    describe.only('/:article_id/comments', () => {
+    describe('/:article_id/comments', () => {
       it('GET - responds with status 2000 and an array of comments for the given article', () => request.get('/api/articles/1/comments')
         .expect(200).then((res) => {
           expect(res.body.comments).to.have.length(10);
@@ -251,6 +251,92 @@ describe('/api', () => {
           expect(res.status).to.equal(405);
           expect(res.body.msg).to.equal('Method Not Allowed');
         }));
+      it('POST - responds with 201 and the posted comment when a comment is posted', () => {
+        const comment = {
+          user_id: 1,
+          body: 'test comment',
+        };
+        return request.post('/api/articles/8/comments')
+          .expect(201)
+          .send(comment)
+          .then((res) => {
+            expect(res.body.comment).to.have.length(1);
+            expect(res.body.comment[0].body).to.equal('test comment');
+            expect(res.body.comment[0]).to.have.keys('comment_id', 'user_id', 'article_id', 'votes', 'created_at', 'body');
+          });
+      });
+      it('ERROR - POST - responds with 400 and invalid input if body or user_id not provided', () => {
+        const comment = {};
+        return request.post('/api/articles/8/comments')
+          .expect(400)
+          .send(comment)
+          .then((res) => {
+            expect(res.status).to.equal(400);
+          });
+      });
+      it.skip('ERROR - POST - responds with 404 if attempting to post to non-existent article', () => {
+        const comment = {
+          user_id: 1,
+          body: 'test comment',
+        };
+        return request.post('/api/articles/343/comments')
+          .expect(404)
+          .send(comment)
+          .then((res) => {
+            expect(res.status).to.equal(404);
+          });
+      });
+      it('PATCH - updates the votes property of the comment by the given positive amount', () => {
+        const votes = {
+          inc_votes: 5,
+        };
+        return request.patch('/api/articles/1/comments/2')
+          .send(votes)
+          .expect(200).then((res) => {
+            console.log(res.body);
+            expect(res.body.comment[0].votes).to.equal(19);
+          });
+      });
+      it('PATCH - updates the votes property of the comment by the given negative amount', () => {
+        const votes = {
+          inc_votes: -5,
+        };
+        return request.patch('/api/articles/1/comments/2')
+          .send(votes)
+          .expect(200).then((res) => {
+            expect(res.body.comment[0].votes).to.equal(9);
+          });
+      });
+      it('ERROR - PATCH - responds with status 400 and invalid format if the votes value is not an integer', () => {
+        const votes = {
+          inc_votes: 'string',
+        };
+        return request.patch('/api/articles/1/comments/2')
+          .send(votes)
+          .expect(400).then((res) => {
+            expect(res.status).to.equal(400);
+          });
+      });
+      it('ERROR - PATCH -responds with status 404 if comment does not exist', () => {
+        const votes = {
+          inc_votes: -5,
+        };
+        return request.patch('/api/articles/1/comments/1')
+          .send(votes)
+          .expect(404)
+          .then((res) => {
+            expect(res.status).to.equal(404);
+          });
+      });
+      it('DELETE - responds with status 204 and deletion message when article is deleted', () => request.delete('/api/articles/1/comments/2')
+        .expect(204).then((res) => {
+         expect(res.body).to.eql({});
+        }).then(() => request.get('/api/articles/1/comments/2')
+          .expect(404)
+          .then((res) => {
+            expect(res.body.msg).to.equal('Page Not Found');
+          })));
+       it.only
     });
   });
 });
