@@ -17,7 +17,7 @@ const {
 
 articleRouter.param('article_id', (req, res, next, param) => {
   if (/^\d+$/.test(param)) return next();
-  next({ status: 400 });
+  return next({ status: 400 });
 });
 
 

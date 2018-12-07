@@ -88,9 +88,14 @@ describe('/api', () => {
         .expect(200).then((res) => {
           expect(res.body.articles).to.have.length(10);
         }));
-      it('GET - allows a sort_by query, which sorts the article by column (default to date)', () => request.get('/api/topics/mitch/articles?sort_criteria=article_id')
+      it('GET - allows a sort_by query, which sorts the articles by column (default to date)', () => request.get('/api/topics/mitch/articles?sort_criteria=article_id')
         .expect(200).then((res) => {
           expect(res.body.articles[0].article_id).to.equal(12);
+        }));
+      it('ERROR - responds with 400 if sort_criteria is invalid', () => request.get('/api/topics/mitch/articles?sort_criteria=error')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).to.equal('invalid sort criteria');
         }));
       it('GET - specifies the page at which to start - starts at page one if not specified', () => request.get('/api/topics/mitch/articles?limit=5&?p=2')
         .expect(200).then((res) => {
@@ -261,6 +266,11 @@ describe('/api', () => {
         .expect(200)
         .then((res) => {
           expect(res.body.comments[0].author).to.equal('icellusedkars');
+        }));
+      it('ERROR - GET - responds with 400 if the sort_criteria column is not valid', () => request.get('/api/articles/1/comments?sort_criteria=error')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).to.equal('invalid sort criteria');
         }));
       it('GET - responds with 200 and specifies the page at which to start - starts at page one if not specified', () => request.get('/api/articles/1/comments?limit=5&?p=2')
         .expect(200).then((res) => {

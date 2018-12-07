@@ -13,7 +13,7 @@ const {
 
 topicRouter.param('slug', (req, res, next, param) => {
   if (/^[a-zA-Z]+$/.test(param)) return next();
-  next({
+  return next({
     status: 400,
   });
 });
