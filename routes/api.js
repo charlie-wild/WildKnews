@@ -12,7 +12,6 @@ apiRouter.use('/articles', articleRouter);
 apiRouter.use('/users', userRouter);
 
 
-
 apiRouter.route('/')
   .get(serveEndpoints)
   .all(handle405);

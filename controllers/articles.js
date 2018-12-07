@@ -7,7 +7,7 @@ exports.getArticlesByTopic = (req, res, next) => {
   } = req.query;
   const { topic } = req.params;
   connection('articles')
-    .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
+    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
@@ -22,7 +22,7 @@ exports.getArticlesByTopic = (req, res, next) => {
       }
     })
     .where('topic', topic)
-    .join('users', 'created_by', '=', 'users.user_id')
+    .join('users', 'articles.user_id', '=', 'users.user_id')
     .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
@@ -37,13 +37,11 @@ exports.getArticlesByTopic = (req, res, next) => {
 
 exports.postNewArticleToTopic = (req, res, next) => {
   const newObj = { ...req.body, ...req.params };
-  newObj.created_by = newObj.user_id;
-  delete newObj.user_id;
   return connection('articles')
     .insert(newObj)
     .returning('*')
     .then((article) => {
-      if (Object.keys(article[0]).length !== 7 || article[0].created_by == null) {
+      if (Object.keys(article[0]).length !== 7 || article[0].user_id == null) {
         return Promise.reject({ status: 400, msg: 'Invalid Input' });
       }
       return res.status(201).send({ article });
@@ -53,10 +51,10 @@ exports.postNewArticleToTopic = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
   const {
-    limit = 10, sort_criteria = 'created_by', p = 1, sort_ascending,
+    limit = 10, sort_criteria = 'created_at', p = 1, sort_ascending,
   } = req.query;
   return connection('articles')
-    .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
+    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
@@ -70,11 +68,12 @@ exports.getAllArticles = (req, res, next) => {
         articleQuery.limit(limit);
       }
     })
-    .join('users', 'created_by', '=', 'users.user_id')
+    .join('users', 'articles.user_id', '=', 'users.user_id')
     .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
     .then(((articles) => {
+      console.log('here');
       if (articles.length === 0) {
         return Promise.reject({ status: 404, msg: 'Page Not Found' });
       }
@@ -85,11 +84,11 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   const {
-    limit = 10, sort_criteria = 'created_by', p = 1, sort_ascending,
+    limit = 10, sort_criteria = 'created_at', p = 1, sort_ascending,
   } = req.query;
   const { article_id } = req.params;
   return connection('articles')
-    .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
+    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
     .offset(Math.floor(limit * (p - 1)))
     .where('articles.article_id', article_id)
     .modify((articleQuery) => {
@@ -104,7 +103,7 @@ exports.getArticleById = (req, res, next) => {
         articleQuery.limit(limit);
       }
     })
-    .join('users', 'created_by', '=', 'users.user_id')
+    .join('users', 'articles.user_id', '=', 'users.user_id')
     .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')

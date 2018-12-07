@@ -10,12 +10,12 @@ exports.formatArticles = (data, lookupObj) => {
   const formatted = data.map((article) => {
     const newArticle = { ...article };
     newArticle.created_at = new Date(article.created_at).toISOString().slice(0, 10);
-    newArticle.created_by = lookupObj[article.created_by];
+    newArticle.user_id = lookupObj[article.created_by];
     const {
-      title, topic, created_by, body, created_at,
+      title, topic, user_id, body, created_at,
     } = newArticle;
     return {
-      title, topic, created_by, body, created_at,
+      title, topic, user_id, body, created_at,
     };
   });
   return formatted;

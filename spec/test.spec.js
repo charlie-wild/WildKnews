@@ -77,7 +77,7 @@ describe('/api', () => {
         .expect(200)
         .then((res) => {
           expect(res.body.articles).to.have.length(10);
-          expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'created_by', 'created_at', 'topic', 'body', 'author', 'comment_count');
+          expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'user_id', 'created_at', 'topic', 'body', 'author', 'comment_count');
         }));
       it('GET - allows a limit query, which limits number of responses (default 10)', () => request
         .get('/api/topics/mitch/articles?limit=5')
@@ -152,7 +152,7 @@ describe('/api', () => {
     it('GET - responds with 200 and an array of article objects', () => request.get('/api/articles')
       .expect(200)
       .then((res) => {
-        expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'created_by', 'created_at', 'topic', 'body', 'author', 'comment_count');
+        expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'user_id', 'created_at', 'topic', 'body', 'author', 'comment_count');
         expect(res.body.articles).to.have.length(10);
       }));
     it('GET - responds with 200 and a limited number of articles if limit is provided (default 10', () => request.get('/api/articles?limit=5')
@@ -388,7 +388,7 @@ describe('/api', () => {
         }));
     });
   });
-  describe.only('/users', () => {
+  describe('/users', () => {
     it('GET - responds with status 200 and an array of user objects', () => request.get('/api/users')
       .expect(200)
       .then((res) => {
