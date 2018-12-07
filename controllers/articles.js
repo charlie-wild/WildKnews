@@ -11,7 +11,7 @@ exports.getArticlesByTopic = (req, res, next) => {
     .limit(limit)
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
-      if (sort_ascending === true) {
+      if (sort_ascending) {
         articleQuery.orderBy(sort_criteria, 'asc');
       } else {
         articleQuery.orderBy(sort_criteria, 'desc');
@@ -56,7 +56,7 @@ exports.getAllArticles = (req, res, next) => {
     .limit(limit)
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
-      if (sort_ascending === true) {
+      if (sort_ascending) {
         articleQuery.orderBy(sort_criteria, 'asc');
       } else {
         articleQuery.orderBy(sort_criteria, 'desc');
