@@ -11,8 +11,11 @@
     "fix": "eslint --fix ./",
     "seed": "npx knex migrate:rollback --env test && npx knex migrate:latest --env test && npx knex seed:run --env test",
     "seed:dev": "npx knex migrate:rollback && npx knex migrate:latest && npx knex seed:run",
-    "dev": "nodemon listen.js"
-
+    "dev": "nodemon listen.js",
+    "start": "node listen.js",
+    "seed:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex seed:run --env production",
+    "migrate:latest:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:latest --env production",
+    "migrate:rollback:prod": "DB_URL=$(heroku config:get DATABASE_URL) knex migrate:rollback --env production"
   },
   "repository": {
     "type": "git",
@@ -29,6 +32,7 @@
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "express": "^4.16.4",
+    "heroku": "^7.19.3",
     "knex": "^0.15.2",
     "moment": "^2.22.2",
     "nodemon": "^1.18.7",
