@@ -44,6 +44,13 @@ describe('/api', () => {
           expect(res.body.newTopic[0].slug).to.equal('slimy');
         });
     });
+    it('ERROR - PATCH - responds with status 405 and "Method Not Allowed"', () => {
+      return request.patch('/api/topics')
+      .expect(405)
+      .then((res) => {
+        expect(res.body.msg).to.equal('Method Not Allowed');
+      })
+    })
     it('ERROR - DELETE - responds with a 405 and "Msg: Method Not Allowed" when a delete is attempted', () => request
       .delete('/api/topics')
       .expect(405)
@@ -101,6 +108,11 @@ describe('/api', () => {
         .then(((res) => {
           expect(res.body.msg).to.equal('Method Not Allowed');
         })));
+      it('ERROR - DELETE - responds with status 405 and "Method Not Allowed"', () => request.delete('/api/topics/mitch/articles')
+        .expect(405)
+        .then((res) => {
+          expect(res.body.msg).to.equal('Method Not Allowed');
+        }));
       it('POST - accepts an object containing a title, body and user_id property and responds with the posted article', () => request.post('/api/topics/mitch/articles')
         .expect(201)
         .send(newArticle)
@@ -157,15 +169,17 @@ describe('/api', () => {
     it('ERROR - responds with 400 if there is an incorrect query provided', () => request.get('/api/articles?sort_criteria=2343')
       .expect(400).then((res) => {
         expect(res.status).to.equal(400);
+        expect(res.body.msg).to.equal('invalid sort criteria');
       }));
     describe('/:article_id', () => {
       it('GET - responds with an article object with the provided id', () => request.get('/api/articles/3')
         .expect(200).then((res) => {
           expect(res.body.articles[0].title).to.equal('Eight pug gifs that remind me of mitch');
         }));
-      it('ERROR - responds with 400 if the article id is malformed', () => request.get('/api/articles/error')
+      it.only('ERROR - responds with 400 if the article id is malformed', () => request.get('/api/articles/error')
         .expect(400).then((res) => {
           expect(res.status).to.equal(400);
+          expect(res.body.msg).to.equal('invalid input syntax for type integer');
         }));
       it('ERROR - responds with 404 if the article does not exist', () => request.get('/api/articles/45')
         .expect(404).then((res) => {
@@ -199,6 +213,7 @@ describe('/api', () => {
         .send({ inc_votes: 5 })
         .expect(400).then((res) => {
           expect(res.status).to.equal(400);
+          expect(res.body.msg).to.equal('invalid input syntax for type integer');
         }));
       it('ERROR - PATCH - responds with status 400 if votes are malformed syntax', () => request.patch('/api/articles/3')
         .send({
