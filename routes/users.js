@@ -3,6 +3,7 @@ const { getAllUsers, getUserById } = require('../controllers/users');
 const { handle405 } = require('../errors/index');
 
 
+
 userRouter.route('/')
   .get(getAllUsers)
   .all(handle405);

@@ -12,8 +12,6 @@ apiRouter.use('/articles', articleRouter);
 apiRouter.use('/users', userRouter);
 
 
-// routing middleware
-
 
 apiRouter.route('/')
   .get(serveEndpoints)
