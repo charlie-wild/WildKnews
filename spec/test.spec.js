@@ -84,6 +84,10 @@ describe('/api', () => {
         .expect(200).then((res) => {
           expect(res.body.articles).to.have.length(5);
         }));
+      it('GET - responds with default limit if limit given is less than 1', () => request.get('/api/topics/mitch/articles?limit=-1')
+        .expect(200).then((res) => {
+          expect(res.body.articles).to.have.length(10);
+        }));
       it('GET - allows a sort_by query, which sorts the article by column (default to date)', () => request.get('/api/topics/mitch/articles?sort_criteria=article_id')
         .expect(200).then((res) => {
           expect(res.body.articles[0].article_id).to.equal(12);
@@ -92,7 +96,7 @@ describe('/api', () => {
         .expect(200).then((res) => {
           expect(res.body.articles).to.have.length(5);
         }));
-      it.only('GET - sorts in ascending order when sort_ascending is specified true', () => request.get('/api/topics/mitch/articles?sort_critera=created_at&sort_ascending=true')
+      it('GET - sorts in ascending order when sort_ascending is specified true', () => request.get('/api/topics/mitch/articles?sort_critera=created_at&sort_ascending=true')
         .expect(200).then((res) => {
           expect(res.body.articles[0].article_id).to.equal(12);
         }));
@@ -151,6 +155,11 @@ describe('/api', () => {
       .then((res) => {
         expect(res.body.articles).to.have.length(5);
       }));
+    it('GET - responds with 200 and the default limit of articles if limit is a negative number', () => request.get('/api/articles?limit=-2')
+      .expect(200)
+      .then((res) => {
+        expect(res.body.articles).to.have.length(10);
+      }));
     it('GET - responds with 200 and articles sorted by any valid column (defaults to date)', () => request.get('/api/articles?sort_criteria=comment_count')
       .expect(200)
       .then((res) => {
@@ -169,7 +178,7 @@ describe('/api', () => {
         expect(res.status).to.equal(400);
         expect(res.body.msg).to.equal('invalid sort criteria');
       }));
-    describe.only('/:article_id', () => {
+    describe('/:article_id', () => {
       it('GET - responds with an article object with the provided id', () => request.get('/api/articles/3')
         .expect(200).then((res) => {
           expect(res.body.articles[0].title).to.equal('Eight pug gifs that remind me of mitch');
@@ -210,7 +219,7 @@ describe('/api', () => {
         .send({ inc_votes: 5 })
         .expect(400).then((res) => {
           expect(res.status).to.equal(400);
-       }));
+        }));
       it('ERROR - PATCH - responds with status 400 if votes are malformed syntax', () => request.patch('/api/articles/3')
         .send({
           inc_votes: 'string',
@@ -242,6 +251,11 @@ describe('/api', () => {
         .expect(200)
         .then((res) => {
           expect(res.body.comments).to.have.length(5);
+        }));
+      it('GET - responds with 200 and the default limit (10) of comments if limit provided is less than 1', () => request.get('/api/articles/1/comments?limit=-1')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments).to.have.length(10);
         }));
       it('GET - responds with 200 and comments sorted by any valid column (defaults to date)', () => request.get('/api/articles/1/comments?sort_criteria=votes')
         .expect(200)

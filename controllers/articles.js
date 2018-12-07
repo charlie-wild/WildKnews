@@ -8,13 +8,17 @@ exports.getArticlesByTopic = (req, res, next) => {
   const { topic } = req.params;
   connection('articles')
     .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
-    .limit(limit)
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
         articleQuery.orderBy(sort_criteria, 'asc');
       } else {
         articleQuery.orderBy(sort_criteria, 'desc');
+      }
+      if (limit < 1) {
+        articleQuery.limit(10);
+      } else {
+        articleQuery.limit(limit);
       }
     })
     .where('topic', topic)
@@ -53,13 +57,17 @@ exports.getAllArticles = (req, res, next) => {
   } = req.query;
   return connection('articles')
     .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
-    .limit(limit)
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
         articleQuery.orderBy(sort_criteria, 'asc');
       } else {
         articleQuery.orderBy(sort_criteria, 'desc');
+      }
+      if (limit < 1) {
+        articleQuery.limit(10);
+      } else {
+        articleQuery.limit(limit);
       }
     })
     .join('users', 'created_by', '=', 'users.user_id')
@@ -82,7 +90,6 @@ exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
   return connection('articles')
     .select('articles.article_id', 'title', 'articles.votes', 'articles.created_by', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
-    .limit(limit)
     .offset(Math.floor(limit * (p - 1)))
     .where('articles.article_id', article_id)
     .modify((articleQuery) => {
@@ -90,6 +97,11 @@ exports.getArticleById = (req, res, next) => {
         articleQuery.orderBy(sort_criteria, 'asc');
       } else {
         articleQuery.orderBy(sort_criteria, 'desc');
+      }
+      if (limit < 1) {
+        articleQuery.limit(10);
+      } else {
+        articleQuery.limit(limit);
       }
     })
     .join('users', 'created_by', '=', 'users.user_id')

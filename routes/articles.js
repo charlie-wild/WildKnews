@@ -16,10 +16,9 @@ const {
 } = require('../controllers/comments');
 
 articleRouter.param('article_id', (req, res, next, param) => {
-    if (/^\d+$/.test(param)) return next();
-    next({ status: 400
-    });
-})
+  if (/^\d+$/.test(param)) return next();
+  next({ status: 400 });
+});
 
 
 articleRouter.route('/')

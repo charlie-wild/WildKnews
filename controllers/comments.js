@@ -8,13 +8,17 @@ exports.getCommentsByArticleId = (req, res, next) => {
   } = req.query;
   return connection('comments')
     .select('comments.comment_id', 'comments.votes', 'comments.created_at', 'users.username AS author', 'comments.body')
-    .limit(limit)
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
         articleQuery.orderBy(sort_criteria, 'asc');
       } else {
         articleQuery.orderBy(sort_criteria, 'desc');
+      }
+      if (limit < 1) {
+        articleQuery.limit(10);
+      } else {
+        articleQuery.limit(limit);
       }
     })
     .where('article_id', article_id)

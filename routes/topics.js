@@ -11,6 +11,13 @@ const {
   handle405,
 } = require('../errors/index');
 
+topicRouter.param('slug', (req, res, next, param) => {
+  if (/^[a-zA-Z]+$/.test(param)) return next();
+  next({
+    status: 400,
+  });
+});
+
 
 topicRouter.route('/')
   .get(getAllTopics)
