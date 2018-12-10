@@ -124,8 +124,7 @@ describe('/api', () => {
         .expect(201)
         .send(newArticle)
         .then((res) => {
-          expect(res.body.article).to.have.length(1);
-          expect(res.body.article[0].title).to.equal('Test Article');
+          expect(res.body.article.title).to.equal('Test Article');
         }));
       it('ERROR - POST - responds with status 422 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
         .send(newArticle)
