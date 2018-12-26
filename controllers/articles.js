@@ -7,7 +7,7 @@ exports.getArticlesByTopic = (req, res, next) => {
   } = req.query;
   const { topic } = req.params;
   connection('articles')
-    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
+    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id AS author', 'articles.created_at', 'topic', 'users.username')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
@@ -55,7 +55,7 @@ exports.getAllArticles = (req, res, next) => {
     limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
   } = req.query;
   return connection('articles')
-    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
+    .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id AS author', 'articles.created_at', 'topic', 'users.username')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
@@ -74,7 +74,6 @@ exports.getAllArticles = (req, res, next) => {
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
     .then(((articles) => {
-      console.log('here');
       if (articles.length === 0) {
         return Promise.reject({ status: 404, msg: 'Page Not Found' });
       }
