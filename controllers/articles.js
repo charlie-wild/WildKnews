@@ -3,7 +3,7 @@ const connection = require('../db/connection');
 
 exports.getArticlesByTopic = (req, res, next) => {
   const {
-    limit = 10, sort_criteria = 'created_at', p = 1, sort_ascending,
+    limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
   } = req.query;
   const { topic } = req.params;
   connection('articles')
@@ -11,9 +11,9 @@ exports.getArticlesByTopic = (req, res, next) => {
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
-        articleQuery.orderBy(sort_criteria, 'asc');
+        articleQuery.orderBy(sort_by, 'asc');
       } else {
-        articleQuery.orderBy(sort_criteria, 'desc');
+        articleQuery.orderBy(sort_by, 'desc');
       }
       if (limit < 1) {
         articleQuery.limit(10);
@@ -52,16 +52,16 @@ exports.postNewArticleToTopic = (req, res, next) => {
 
 exports.getAllArticles = (req, res, next) => {
   const {
-    limit = 10, sort_criteria = 'created_at', p = 1, sort_ascending,
+    limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
   } = req.query;
   return connection('articles')
     .select('articles.article_id', 'title', 'articles.votes', 'articles.user_id', 'articles.created_at', 'topic', 'articles.body', 'users.username AS author')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
-        articleQuery.orderBy(sort_criteria, 'asc');
+        articleQuery.orderBy(sort_by, 'asc');
       } else {
-        articleQuery.orderBy(sort_criteria, 'desc');
+        articleQuery.orderBy(sort_by, 'desc');
       }
       if (limit < 1) {
         articleQuery.limit(10);
@@ -85,7 +85,7 @@ exports.getAllArticles = (req, res, next) => {
 
 exports.getArticleById = (req, res, next) => {
   const {
-    limit = 10, sort_criteria = 'created_at', p = 1, sort_ascending,
+    limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
   } = req.query;
   const { article_id } = req.params;
   return connection('articles')
@@ -94,9 +94,9 @@ exports.getArticleById = (req, res, next) => {
     .where('articles.article_id', article_id)
     .modify((articleQuery) => {
       if (sort_ascending) {
-        articleQuery.orderBy(sort_criteria, 'asc');
+        articleQuery.orderBy(sort_by, 'asc');
       } else {
-        articleQuery.orderBy(sort_criteria, 'desc');
+        articleQuery.orderBy(sort_by, 'desc');
       }
       if (limit < 1) {
         articleQuery.limit(10);
@@ -130,7 +130,8 @@ exports.modifyArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const votesInt = Math.abs(req.body.inc_votes);
   return connection('articles')
-    .select('*')[incOrDec]('votes', votesInt)
+    .select('*')
+    [incOrDec]('votes', votesInt)
     .where('articles.article_id', article_id)
     .returning('*')
     .then((article) => {

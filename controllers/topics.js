@@ -14,8 +14,8 @@ exports.postNewTopic = (req, res, next) => {
   connection('topics')
     .returning('*')
     .insert(req.body)
-    .then((newTopic) => {
-      res.status(201).send({ newTopic });
+    .then((topic) => {
+      res.status(201).send({ topic });
     })
     .catch(next);
 };
