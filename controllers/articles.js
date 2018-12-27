@@ -107,15 +107,15 @@ exports.getArticleById = (req, res, next) => {
     .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
-    .then(((articles) => {
-      if (articles.length === 0) {
+    .then(((article) => {
+      if (article.length === 0) {
         return Promise.reject({
           status: 404,
           msg: 'Page Not Found',
         });
       }
       return res.status(200).send({
-        articles,
+        article,
       });
     }))
     .catch(next);
@@ -129,8 +129,7 @@ exports.modifyArticleVotes = (req, res, next) => {
   const { article_id } = req.params;
   const votesInt = Math.abs(req.body.inc_votes);
   return connection('articles')
-    .select('*')
-    [incOrDec]('votes', votesInt)
+    .select('*')[incOrDec]('votes', votesInt)
     .where('articles.article_id', article_id)
     .returning('*')
     .then((article) => {
