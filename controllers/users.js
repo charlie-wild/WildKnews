@@ -12,7 +12,7 @@ exports.getUserById = (req, res, next) => {
   connection('users')
     .select('*')
     .where('user_id', user_id)
-    .then((user) => {
+    .then(([user]) => {
       if (user.length === 0) {
         return Promise.reject({ status: 404, msg: 'Page Not Found' });
       }
