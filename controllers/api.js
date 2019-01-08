@@ -17,12 +17,10 @@ exports.serveEndpoints = (req, res, next) => {
       methods: ['get', 'patch', 'delete'],
       description: 'Get article by id, change votes on article and delete an article',
     },
-    {
-      '/api/comments' : {
-        methods: ['get'],
-        description: 'Get all comments',
-      }
-    }
+    '/api/comments': {
+      methods: ['get'],
+      description: 'Get comments',
+    },
     '/api/articles/:article_id/comments': {
       methods: ['get', 'post'],
       description: 'Get comments by article id, and post new comments to article',
