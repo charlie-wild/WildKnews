@@ -107,8 +107,8 @@ exports.getArticleById = (req, res, next) => {
     .leftJoin('comments', 'articles.article_id', '=', 'comments.article_id')
     .count('comments.article_id AS comment_count')
     .groupBy('articles.article_id', 'users.username')
-    .then(((article) => {
-      if (article.length === 0) {
+    .then((([article]) => {
+      if (!article) {
         return Promise.reject({
           status: 404,
           msg: 'Page Not Found',
