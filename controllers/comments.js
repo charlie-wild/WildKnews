@@ -5,7 +5,7 @@ exports.getAllComments = (req, res, next) => {
     limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
   } = req.query;
   return connection('comments')
-    .select('comments.comment_id', 'comments.votes', 'comments.created_at', 'users.username AS author', 'comments.body', 'comments.belongs_to')
+    .select('comments.comment_id', 'comments.votes', 'comments.created_at', 'users.username AS author', 'comments.body')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
