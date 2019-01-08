@@ -5,7 +5,7 @@ exports.serveEndpoints = (req, res, next) => {
       methods: ['get', 'post'],
       description: 'Get and post a new topic',
     },
-    '/api/:topic/articles': {
+    '/api/topics/:topic/articles': {
       methods: ['get', 'post'],
       description: 'Get and post a new article to a topic',
     },
