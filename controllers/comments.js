@@ -5,7 +5,7 @@ exports.getAllComments = (req, res, next) => {
     limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
   } = req.query;
   return connection('comments')
-    .select('*')
+    .select('comments.comment_id', 'comments.votes', 'comments.created_at', 'users.username AS author', 'comments.body')
     .offset(Math.floor(limit * (p - 1)))
     .modify((articleQuery) => {
       if (sort_ascending) {
@@ -19,6 +19,7 @@ exports.getAllComments = (req, res, next) => {
         articleQuery.limit(limit);
       }
     })
+    .join('users', 'comments.user_id', '=', 'users.user_id')
     .then((comments) => {
       if (comments.length === 0) {
         return Promise.reject({ status: 404, msg: 'Page Not Found' });
