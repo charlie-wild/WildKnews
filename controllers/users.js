@@ -8,10 +8,10 @@ exports.getAllUsers = (req, res, next) => {
 };
 
 exports.getUserById = (req, res, next) => {
-  const { user_id } = req.params;
+  const { username } = req.params;
   connection('users')
     .select('*')
-    .where('user_id', user_id)
+    .where('username', username)
     .then(([user]) => {
       if (user.length === 0) {
         return Promise.reject({ status: 404, msg: 'Page Not Found' });

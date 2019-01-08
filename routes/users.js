@@ -7,7 +7,7 @@ userRouter.route('/')
   .get(getAllUsers)
   .all(handle405);
 
-userRouter.route('/:user_id')
+userRouter.route('/:username')
   .get(getUserById)
   .all(handle405);
 
