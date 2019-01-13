@@ -13,7 +13,7 @@ exports.getUserById = (req, res, next) => {
     .select('*')
     .where('username', username)
     .then(([user]) => {
-      if (user.length === 0) {
+      if (!user) {
         return Promise.reject({ status: 404, msg: 'Page Not Found' });
       }
       return res.status(200).send({ user });

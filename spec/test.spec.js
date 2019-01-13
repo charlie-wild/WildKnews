@@ -13,7 +13,7 @@ describe('/api', () => {
   after(() => {
     connection.destroy();
   });
-   it('ERROR - responds with status 404 and "Page Not Found" when passed an invalid endpoint', () => request.get('/api/bananas')
+  it('ERROR - responds with status 404 and "Page Not Found" when passed an invalid endpoint', () => request.get('/api/bananas')
     .expect(404)
     .then((res) => {
       expect(res.body.msg).to.equal('Page Not Found');
@@ -26,18 +26,6 @@ describe('/api', () => {
         expect(res.body.topics).to.have.length(2);
         expect(res.body.topics[0]).to.have.keys('slug', 'description');
       }));
-    it('POST - responds with status 201 and a new topic object', () => {
-      const newTopic = {
-        description: 'Definitely not a slug',
-        slug: 'slimy',
-      };
-      return request.post('/api/topics').send(newTopic).expect(201)
-        .then((res) => {
-          expect(res.body.newTopic).to.have.length(1);
-          expect(res.body.newTopic[0]).to.have.keys('slug', 'description');
-          expect(res.body.newTopic[0].slug).to.equal('slimy');
-        });
-    });
     it('ERROR - PATCH - responds with status 405 and "Method Not Allowed"', () => request.patch('/api/topics')
       .expect(405)
       .then((res) => {
@@ -109,12 +97,6 @@ describe('/api', () => {
         .then((res) => {
           expect(res.body.msg).to.equal('Method Not Allowed');
         }));
-      it('POST - accepts an object containing a title, body and user_id property and responds with the posted article', () => request.post('/api/topics/mitch/articles')
-        .expect(201)
-        .send(newArticle)
-        .then((res) => {
-          expect(res.body.article.title).to.equal('Test Article');
-        }));
       it('ERROR - POST - responds with status 422 and invalid parameter when invalid topic provided', () => request.post('/api/topics/error/articles')
         .send(newArticle)
         .expect(422)
@@ -137,12 +119,6 @@ describe('/api', () => {
     });
   });
   describe('/articles', () => {
-    it('GET - responds with 200 and an array of article objects', () => request.get('/api/articles')
-      .expect(200)
-      .then((res) => {
-        expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'user_id', 'created_at', 'topic', 'body', 'author', 'comment_count');
-        expect(res.body.articles).to.have.length(10);
-      }));
     it('GET - responds with 200 and a limited number of articles if limit is provided (default 10', () => request.get('/api/articles?limit=5')
       .expect(200)
       .then((res) => {
@@ -166,16 +142,7 @@ describe('/api', () => {
       .expect(200).then((res) => {
         expect(res.body.articles[0].article_id).to.equal(12);
       }));
-    it('ERROR - responds with 400 if there is an incorrect query provided', () => request.get('/api/articles?sort_criteria=2343')
-      .expect(400).then((res) => {
-        expect(res.status).to.equal(400);
-        expect(res.body.msg).to.equal('invalid sort criteria');
-      }));
     describe('/:article_id', () => {
-      it('GET - responds with an article object with the provided id', () => request.get('/api/articles/3')
-        .expect(200).then((res) => {
-          expect(res.body.articles[0].title).to.equal('Eight pug gifs that remind me of mitch');
-        }));
       it('ERROR - responds with 400 if the article id is malformed', () => request.get('/api/articles/error')
         .expect(400).then((res) => {
           expect(res.status).to.equal(400);
@@ -425,12 +392,6 @@ describe('/api', () => {
         .then((res) => {
           expect(res.status).to.equal(404);
           expect(res.body.msg).to.equal('Page Not Found');
-        }));
-      it('ERROR - GET - responds with 400 if username is incorrect syntax', () => request.get('/api/users/error')
-        .expect(400)
-        .then((res) => {
-          expect(res.status).to.equal(400);
-          expect(res.body.msg).to.equal('invalid input syntax for type integer');
         }));
     });
   });
