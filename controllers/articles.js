@@ -41,7 +41,7 @@ exports.postNewArticleToTopic = (req, res, next) => {
     .insert(newObj)
     .returning('*')
     .then((article) => {
-      if (Object.keys(article[0]).length !== 7 || article[0].user_id == null) {
+      if (Object.keys(article[0]).length !== 7 || article[0].user_id == null || article.body[0] === '') {
         return Promise.reject({ status: 400, msg: 'Invalid Input' });
       }
       [article] = article;

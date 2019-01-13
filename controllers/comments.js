@@ -1,34 +1,5 @@
 const connection = require('../db/connection');
 
-exports.getAllComments = (req, res, next) => {
-  const {
-    limit = 10, sort_by = 'created_at', p = 1, sort_ascending,
-  } = req.query;
-  return connection('comments')
-    .select('comments.comment_id', 'comments.votes', 'comments.created_at', 'users.username AS author', 'comments.body')
-    .offset(Math.floor(limit * (p - 1)))
-    .modify((articleQuery) => {
-      if (sort_ascending) {
-        articleQuery.orderBy(sort_by, 'asc');
-      } else {
-        articleQuery.orderBy(sort_by, 'desc');
-      }
-      if (limit < 1) {
-        articleQuery.limit(10);
-      } else {
-        articleQuery.limit(limit);
-      }
-    })
-    .join('users', 'comments.user_id', '=', 'users.user_id')
-    .then((comments) => {
-      if (comments.length === 0) {
-        return Promise.reject({ status: 404, msg: 'Page Not Found' });
-      }
-      return res.status(200).send({ comments });
-    })
-    .catch(next);
-};
-
 exports.getCommentsByArticleId = (req, res, next) => {
   const { article_id } = req.params;
   const {

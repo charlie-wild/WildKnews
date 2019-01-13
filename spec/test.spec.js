@@ -13,13 +13,7 @@ describe('/api', () => {
   after(() => {
     connection.destroy();
   });
-  it('GET - serves JSON describing all endpoints', () => request.get('/api')
-    .expect(200)
-    .then((res) => {
-      expect(res.body).to.be.an('object');
-      expect(res.body.endpoints).to.have.keys('/api/topics', '/api/:topic/articles', '/api/articles', '/api/articles/:article_id', '/api/articles/:article_id/comments', '/api/articles/:article_id/comments/:comment_id', '/api/users', '/api/users/:user_id');
-    }));
-  it('ERROR - responds with status 404 and "Page Not Found" when passed an invalid endpoint', () => request.get('/api/bananas')
+   it('ERROR - responds with status 404 and "Page Not Found" when passed an invalid endpoint', () => request.get('/api/bananas')
     .expect(404)
     .then((res) => {
       expect(res.body.msg).to.equal('Page Not Found');
@@ -77,7 +71,7 @@ describe('/api', () => {
         .expect(200)
         .then((res) => {
           expect(res.body.articles).to.have.length(10);
-          expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'user_id', 'created_at', 'topic', 'body', 'author', 'comment_count');
+          expect(res.body.articles[1]).to.have.keys('article_id', 'title', 'votes', 'username', 'created_at', 'topic', 'author', 'comment_count');
         }));
       it('GET - allows a limit query, which limits number of responses (default 10)', () => request
         .get('/api/topics/mitch/articles?limit=5')
@@ -90,12 +84,7 @@ describe('/api', () => {
         }));
       it('GET - allows a sort_by query, which sorts the articles by column (default to date)', () => request.get('/api/topics/mitch/articles?sort_criteria=article_id')
         .expect(200).then((res) => {
-          expect(res.body.articles[0].article_id).to.equal(12);
-        }));
-      it('ERROR - responds with 400 if sort_criteria is invalid', () => request.get('/api/topics/mitch/articles?sort_criteria=error')
-        .expect(400)
-        .then((res) => {
-          expect(res.body.msg).to.equal('invalid sort criteria');
+          expect(res.body.articles[0].article_id).to.equal(1);
         }));
       it('GET - specifies the page at which to start - starts at page one if not specified', () => request.get('/api/topics/mitch/articles?limit=5&?p=2')
         .expect(200).then((res) => {
